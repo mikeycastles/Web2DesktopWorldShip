@@ -152,6 +152,9 @@ namespace WebAppShipping
             {
                 btnDailyInvoices.Enabled = false;
 
+                // Reload settings if they were just updated
+                PrintavoApiClient.ReloadSettings();
+
                 // Process shipped orders and get the tracking export message.
                 string shippedResult = await PrintavoApiClient.ProcessShippedOrdersAsync();
                 if (!string.IsNullOrEmpty(shippedResult))
@@ -160,7 +163,7 @@ namespace WebAppShipping
                 }
 
                 // Import orders and get the orders imported message.
-                string ordersResult = await cPrintavo.GetOrders(dtDate.Value.ToShortDateString());
+                string ordersResult = await PrintavoApiClient.ImportOrdersAsync(dtDate.Value.ToShortDateString());
                 MessageBox.Show(ordersResult, "Orders Imported", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)

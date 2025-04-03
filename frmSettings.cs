@@ -18,42 +18,56 @@ namespace WebAppShipping
         public frmSettings()
         {
             InitializeComponent();
+
             var materialSkinManager = MaterialSkinManager.Instance;
             materialSkinManager.AddFormToManage(this);
-            DataTable dt = AccessHelper.ExecuteQuery("SELECT * FROM Settings");
-            if (dt.Rows.Count > 0)
+
+            try
             {
-               txtEmail.Text = dt.Rows[0][1].ToString();
-                txtToken.Text =  dt.Rows[0][2].ToString();
-                if (dt.Rows[0][3].ToString().Length > 0)
-                   txtVerbiage.Text = dt.Rows[0][3].ToString();
+                var settings = new AppSettings();
+                txtEmail.Text = settings.Email;
+                txtToken.Text = settings.Password;
+                txtVerbiage.Text = settings.Verbiage;
+                txtURL.Text = settings.BaseUrl;
+                chkTracking.Checked = settings.Tracking;
             }
-                //materialSkinManager.Theme = MaterialSkinManager.Themes.DARK;
-                //materialSkinManager.ColorScheme = new ColorScheme(Primary.Blue500, Primary.Blue700, Primary.Blue200, Accent.LightBlue200, TextShade.WHITE);
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to load settings: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
 
         private void btnSave_Click(object sender, EventArgs e)
         {
             if (MessageBox.Show("Are you sure you want to Save?", "Save Settings", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                dynamic settings = new ExpandoObject();
-                var settingsDict = (IDictionary<string, object>)settings;
+                try
+                {
+                    var settings = new AppSettings
+                    {
+                        Email = txtEmail.Text,
+                        Password = txtToken.Text,
+                        Verbiage = txtVerbiage.Text,
+                        BaseUrl = txtURL.Text,
+                        Tracking = chkTracking.Checked
+                    };
 
-                // Step 2: Add dynamic properties based on form fields
-                settingsDict["Email"] = txtEmail.Text;
-                settingsDict["Password"] = txtToken.Text;
-                settingsDict["Verbiage"] = txtVerbiage.Text;
-
-                // Step 3: Convert dynamic object to (string, object)[] format
-                var values = settingsDict.Select(kv => (kv.Key, kv.Value)).ToArray();
-
-                // Step 3: Insert or Update User in SQLite
-                AccessHelper.ExecuteNonQuery("DELETE FROM SETTINGS");
-                AccessHelper.InsertOrUpdate("Settings", "Email", settingsDict["Email"], values);
-
+                    if (settings.Save())
+                    {
+                        MessageBox.Show("Settings saved successfully!", "Save Settings", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        this.Close();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Failed to save settings. Please check the logs.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("An error occurred while saving: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
-            MessageBox.Show("Settings Saved Succesfully!", "Save Settings", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            this.Close();
         }
+
     }
 }

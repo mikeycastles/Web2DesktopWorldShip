@@ -44,8 +44,10 @@ public class cService
                 try
                 {
                     EventLogHelper.WriteCustomEvent("Web App Shipping Serivce started");
+                    // Reload settings if they were just updated
+                    PrintavoApiClient.ReloadSettings();
                     // Replace this with the routine you want to run.
-                    await cPrintavo.GetOrders(DateTime.Now.ToShortDateString());
+                    await PrintavoApiClient.ImportOrdersAsync(DateTime.Now.ToShortDateString());
                     await PrintavoApiClient.ProcessShippedOrdersAsync();
                 }
                 catch (Exception ex)

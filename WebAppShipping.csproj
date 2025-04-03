@@ -568,6 +568,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccessHelper.cs" />
+    <Compile Include="AppSettings.cs" />
     <Compile Include="cPrintavo.cs" />
     <Compile Include="cService.cs" />
     <Compile Include="EventLogHelper.cs" />
