@@ -1,19 +1,30 @@
-App is built do pull orders from Printavo API V1.0 to a local access database.
-Users can then setup to import data into UPS World Ship or Fed Ex on their desktop PC's from that Access DB using an ODBC connection.
-Once an order is shipped, the cycle completes when UPS World ship or Fed Ex writes tracking information back to the Access DB.
-Items are then PUT into their appropriate orders via HttPClient call.
+Development Notes
+The application is currently in a testing phase and has not yet been validated in a live production environment.
 
-This is untested in a live scenerio and is built on printavo's documentation via this link:
+It was built using Printavo’s official API documentation, available at:
 https://printavo.docs.apiary.io/#
 
-App is tested using printavo's sandbox site 'Mock' https://private-anon-f15ec4e8e7-printavo.apiary-mock.com/api/version/sessions
-Anomoly: the order response JSON schema has an error where a comma is missing for a property. 
-For testing, this replacement string was added in order to perform testing necessary to make the videos 
-json = json.Replace("\"id\": 1194978", "\"id\": 1194978,");
-You may want to remove this line 169 found in the cPrintavo.cs, otherwise I am sure it won't cause any issues.
+API testing has been conducted using Printavo’s sandbox/mock API:
+https://private-anon-f15ec4e8e7-printavo.apiary-mock.com/api/version/sessions
 
-The entire process can be handled manually or automaticall if the service is started and the app is sent to tray.
-Any questions or change requests, please don't hestitate to reach out to me:
+Known Issues
+An anomaly was identified in the sandbox order response JSON schema where a missing comma results in an invalid structure. As a temporary workaround during testing, the following string replacement was added to the response:
+
+csharp
+Copy
+Edit
+json = json.Replace("\"id\": 1194978", "\"id\": 1194978,");
+This line is located in cPrintavo.cs at line 169. You may choose to remove it when working with a corrected or live API endpoint, although it should not cause issues if left in place for now.
+
+Usage
+The process can be run either manually or automatically. When the application is minimized to the system tray and the background service is running, it will continuously monitor and process order data.
+
+Users can also trigger sync operations manually if needed.
+
+Contact and License
+For any questions, feature requests, or issues, please feel free to reach out directly.
 mikeoshea781@gmail.com
 
-Free under MIT and not responsible for any compiled versions.
+This software is provided free of charge under the MIT License. No warranty is provided, and the author assumes no responsibility for compiled or distributed versions.
+
+
